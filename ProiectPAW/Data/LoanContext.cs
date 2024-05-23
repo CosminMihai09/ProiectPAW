@@ -25,7 +25,6 @@ namespace ProiectPAW.Data
                 .HasForeignKey(l => l.ClientId);
 
             base.OnModelCreating(modelBuilder);
-            Console.WriteLine("Aaaa");
         }
     }
 }
