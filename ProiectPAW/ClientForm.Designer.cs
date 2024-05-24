@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             label1 = new Label();
             NameTextBox = new TextBox();
             PhoneTextBox = new TextBox();
@@ -38,7 +39,11 @@
             PhoneLabel = new Label();
             EmailLabel = new Label();
             ClientsDataGridView = new DataGridView();
+            SaveButton = new Button();
+            DeleteButton = new Button();
+            ErrorProvider = new ErrorProvider(components);
             ((System.ComponentModel.ISupportInitialize)ClientsDataGridView).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)ErrorProvider).BeginInit();
             SuspendLayout();
             // 
             // label1
@@ -54,28 +59,30 @@
             // 
             // NameTextBox
             // 
-            NameTextBox.Location = new Point(131, 69);
+            NameTextBox.Location = new Point(97, 63);
             NameTextBox.Name = "NameTextBox";
             NameTextBox.Size = new Size(128, 23);
             NameTextBox.TabIndex = 1;
             // 
             // PhoneTextBox
             // 
-            PhoneTextBox.Location = new Point(464, 112);
+            PhoneTextBox.Location = new Point(299, 106);
             PhoneTextBox.Name = "PhoneTextBox";
             PhoneTextBox.Size = new Size(128, 23);
             PhoneTextBox.TabIndex = 2;
             // 
             // EmailTextBox
             // 
-            EmailTextBox.Location = new Point(464, 69);
+            EmailTextBox.Location = new Point(299, 63);
             EmailTextBox.Name = "EmailTextBox";
             EmailTextBox.Size = new Size(128, 23);
             EmailTextBox.TabIndex = 3;
+            EmailTextBox.Validating += EmailTextBox_Validating;
+            EmailTextBox.Validated += EmailTextBox_Validated;
             // 
             // AddressTextBox
             // 
-            AddressTextBox.Location = new Point(131, 112);
+            AddressTextBox.Location = new Point(97, 106);
             AddressTextBox.Name = "AddressTextBox";
             AddressTextBox.Size = new Size(128, 23);
             AddressTextBox.TabIndex = 4;
@@ -84,7 +91,7 @@
             // 
             NameLabel.AutoSize = true;
             NameLabel.ForeColor = Color.White;
-            NameLabel.Location = new Point(87, 72);
+            NameLabel.Location = new Point(53, 66);
             NameLabel.Name = "NameLabel";
             NameLabel.Size = new Size(42, 15);
             NameLabel.TabIndex = 5;
@@ -94,7 +101,7 @@
             // 
             AddressLabel.AutoSize = true;
             AddressLabel.ForeColor = Color.White;
-            AddressLabel.Location = new Point(77, 115);
+            AddressLabel.Location = new Point(43, 109);
             AddressLabel.Name = "AddressLabel";
             AddressLabel.Size = new Size(52, 15);
             AddressLabel.TabIndex = 6;
@@ -104,7 +111,7 @@
             // 
             PhoneLabel.AutoSize = true;
             PhoneLabel.ForeColor = Color.White;
-            PhoneLabel.Location = new Point(420, 115);
+            PhoneLabel.Location = new Point(255, 109);
             PhoneLabel.Name = "PhoneLabel";
             PhoneLabel.Size = new Size(44, 15);
             PhoneLabel.TabIndex = 7;
@@ -114,7 +121,7 @@
             // 
             EmailLabel.AutoSize = true;
             EmailLabel.ForeColor = Color.White;
-            EmailLabel.Location = new Point(420, 72);
+            EmailLabel.Location = new Point(255, 66);
             EmailLabel.Name = "EmailLabel";
             EmailLabel.Size = new Size(39, 15);
             EmailLabel.TabIndex = 8;
@@ -125,8 +132,34 @@
             ClientsDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             ClientsDataGridView.Location = new Point(0, 176);
             ClientsDataGridView.Name = "ClientsDataGridView";
-            ClientsDataGridView.Size = new Size(733, 302);
+            ClientsDataGridView.Size = new Size(735, 302);
             ClientsDataGridView.TabIndex = 9;
+            ClientsDataGridView.SelectionChanged += ClientsDataGridView_SelectionChanged;
+            // 
+            // SaveButton
+            // 
+            SaveButton.Location = new Point(567, 147);
+            SaveButton.Name = "SaveButton";
+            SaveButton.Size = new Size(75, 23);
+            SaveButton.TabIndex = 10;
+            SaveButton.Text = "Save";
+            SaveButton.UseVisualStyleBackColor = true;
+            SaveButton.Click += SaveButton_Click;
+            // 
+            // DeleteButton
+            // 
+            DeleteButton.Location = new Point(648, 147);
+            DeleteButton.Name = "DeleteButton";
+            DeleteButton.Size = new Size(75, 23);
+            DeleteButton.TabIndex = 11;
+            DeleteButton.Text = "Delete";
+            DeleteButton.UseVisualStyleBackColor = true;
+            DeleteButton.Click += DeleteButton_Click;
+            // 
+            // ErrorProvider
+            // 
+            ErrorProvider.BlinkStyle = ErrorBlinkStyle.NeverBlink;
+            ErrorProvider.ContainerControl = this;
             // 
             // ClientForm
             // 
@@ -134,6 +167,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(46, 51, 73);
             ClientSize = new Size(733, 477);
+            Controls.Add(DeleteButton);
+            Controls.Add(SaveButton);
             Controls.Add(ClientsDataGridView);
             Controls.Add(EmailLabel);
             Controls.Add(PhoneLabel);
@@ -149,6 +184,7 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "ClientForm";
             ((System.ComponentModel.ISupportInitialize)ClientsDataGridView).EndInit();
+            ((System.ComponentModel.ISupportInitialize)ErrorProvider).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -165,5 +201,8 @@
         private Label PhoneLabel;
         private Label EmailLabel;
         private DataGridView ClientsDataGridView;
+        private Button SaveButton;
+        private Button DeleteButton;
+        private ErrorProvider ErrorProvider;
     }
 }
