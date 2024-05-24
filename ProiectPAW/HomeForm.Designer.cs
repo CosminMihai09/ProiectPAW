@@ -1,6 +1,6 @@
 ﻿namespace ProiectPAW
 {
-    partial class LoanForm
+    partial class HomeForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,36 +28,46 @@
         /// </summary>
         private void InitializeComponent()
         {
-            LoansLabel = new Label();
+            label1 = new Label();
+            label2 = new Label();
             SuspendLayout();
             // 
-            // LoansLabel
+            // label1
             // 
-            LoansLabel.AutoSize = true;
-            LoansLabel.Font = new Font("Segoe UI", 20F);
-            LoansLabel.ForeColor = Color.White;
-            LoansLabel.Location = new Point(310, 122);
-            LoansLabel.Name = "LoansLabel";
-            LoansLabel.Size = new Size(86, 37);
-            LoansLabel.TabIndex = 1;
-            LoansLabel.Text = "Loans";
+            label1.AutoSize = true;
+            label1.Location = new Point(334, 144);
+            label1.Name = "label1";
+            label1.Size = new Size(159, 15);
+            label1.TabIndex = 0;
+            label1.Text = "Aici o sa fie un Grafic frumos";
             // 
-            // LoanForm
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(338, 169);
+            label2.Name = "label2";
+            label2.Size = new Size(155, 15);
+            label2.TabIndex = 1;
+            label2.Text = "asa cum se cere la punctul 8";
+            // 
+            // Home
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(46, 51, 73);
             ClientSize = new Size(733, 477);
-            Controls.Add(LoansLabel);
+            Controls.Add(label2);
+            Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "LoanForm";
-            Text = "LoanForm";
+            Name = "Home";
+            Text = "Home";
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private Label LoansLabel;
+        private Label label1;
+        private Label label2;
     }
 }

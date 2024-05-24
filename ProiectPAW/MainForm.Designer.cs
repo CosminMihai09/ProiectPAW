@@ -35,11 +35,11 @@
             ClientsButton = new Button();
             UserPanel = new Panel();
             UserNameLabel = new Label();
-            pictureBox1 = new PictureBox();
+            HomePictureBox = new PictureBox();
             FormLoaderPanel = new Panel();
             panel1.SuspendLayout();
             UserPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)HomePictureBox).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -59,7 +59,7 @@
             // NavigationPanel
             // 
             NavigationPanel.BackColor = Color.FromArgb(0, 126, 249);
-            NavigationPanel.Location = new Point(0, 193);
+            NavigationPanel.Location = new Point(3, 353);
             NavigationPanel.Name = "NavigationPanel";
             NavigationPanel.Size = new Size(3, 100);
             NavigationPanel.TabIndex = 2;
@@ -118,7 +118,7 @@
             // UserPanel
             // 
             UserPanel.Controls.Add(UserNameLabel);
-            UserPanel.Controls.Add(pictureBox1);
+            UserPanel.Controls.Add(HomePictureBox);
             UserPanel.Dock = DockStyle.Top;
             UserPanel.Location = new Point(0, 0);
             UserPanel.Name = "UserPanel";
@@ -137,15 +137,16 @@
             UserNameLabel.TabIndex = 1;
             UserNameLabel.Text = "User Name";
             // 
-            // pictureBox1
+            // HomePictureBox
             // 
-            pictureBox1.Image = Properties.Resources.Blue_Gold_Minimalist_Car_Showroom_Logo;
-            pictureBox1.Location = new Point(60, 22);
-            pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(63, 63);
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.TabIndex = 0;
-            pictureBox1.TabStop = false;
+            HomePictureBox.Image = Properties.Resources.Blue_Gold_Minimalist_Car_Showroom_Logo;
+            HomePictureBox.Location = new Point(60, 22);
+            HomePictureBox.Name = "HomePictureBox";
+            HomePictureBox.Size = new Size(63, 63);
+            HomePictureBox.SizeMode = PictureBoxSizeMode.Zoom;
+            HomePictureBox.TabIndex = 0;
+            HomePictureBox.TabStop = false;
+            HomePictureBox.Click += HomePictureBox_Click;
             // 
             // FormLoaderPanel
             // 
@@ -170,7 +171,7 @@
             panel1.ResumeLayout(false);
             UserPanel.ResumeLayout(false);
             UserPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)HomePictureBox).EndInit();
             ResumeLayout(false);
         }
 
@@ -178,7 +179,7 @@
         private Panel panel1;
         private Panel UserPanel;
         private Label UserNameLabel;
-        private PictureBox pictureBox1;
+        private PictureBox HomePictureBox;
         private Button ClientsButton;
         private Panel NavigationPanel;
         private Button ExitButton;
