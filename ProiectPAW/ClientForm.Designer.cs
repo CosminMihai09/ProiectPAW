@@ -33,7 +33,6 @@
             NameTextBox = new TextBox();
             PhoneTextBox = new TextBox();
             EmailTextBox = new TextBox();
-            AddressTextBox = new TextBox();
             NameLabel = new Label();
             AddressLabel = new Label();
             PhoneLabel = new Label();
@@ -42,6 +41,9 @@
             SaveButton = new Button();
             DeleteButton = new Button();
             ErrorProvider = new ErrorProvider(components);
+            AddressRichTextBox = new RichTextBox();
+            ExportButton = new Button();
+            ImportButton = new Button();
             ((System.ComponentModel.ISupportInitialize)ClientsDataGridView).BeginInit();
             ((System.ComponentModel.ISupportInitialize)ErrorProvider).BeginInit();
             SuspendLayout();
@@ -54,7 +56,7 @@
             label1.Location = new Point(310, 9);
             label1.Name = "label1";
             label1.Size = new Size(97, 37);
-            label1.TabIndex = 0;
+            label1.TabIndex = 7;
             label1.Text = "Clients";
             // 
             // NameTextBox
@@ -62,30 +64,23 @@
             NameTextBox.Location = new Point(97, 63);
             NameTextBox.Name = "NameTextBox";
             NameTextBox.Size = new Size(128, 23);
-            NameTextBox.TabIndex = 1;
+            NameTextBox.TabIndex = 0;
             // 
             // PhoneTextBox
             // 
-            PhoneTextBox.Location = new Point(299, 106);
+            PhoneTextBox.Location = new Point(97, 101);
             PhoneTextBox.Name = "PhoneTextBox";
             PhoneTextBox.Size = new Size(128, 23);
-            PhoneTextBox.TabIndex = 2;
+            PhoneTextBox.TabIndex = 3;
             // 
             // EmailTextBox
             // 
             EmailTextBox.Location = new Point(299, 63);
             EmailTextBox.Name = "EmailTextBox";
             EmailTextBox.Size = new Size(128, 23);
-            EmailTextBox.TabIndex = 3;
+            EmailTextBox.TabIndex = 2;
             EmailTextBox.Validating += EmailTextBox_Validating;
             EmailTextBox.Validated += EmailTextBox_Validated;
-            // 
-            // AddressTextBox
-            // 
-            AddressTextBox.Location = new Point(97, 106);
-            AddressTextBox.Name = "AddressTextBox";
-            AddressTextBox.Size = new Size(128, 23);
-            AddressTextBox.TabIndex = 4;
             // 
             // NameLabel
             // 
@@ -94,27 +89,27 @@
             NameLabel.Location = new Point(53, 66);
             NameLabel.Name = "NameLabel";
             NameLabel.Size = new Size(42, 15);
-            NameLabel.TabIndex = 5;
+            NameLabel.TabIndex = 8;
             NameLabel.Text = "Name:";
             // 
             // AddressLabel
             // 
             AddressLabel.AutoSize = true;
             AddressLabel.ForeColor = Color.White;
-            AddressLabel.Location = new Point(43, 109);
+            AddressLabel.Location = new Point(245, 101);
             AddressLabel.Name = "AddressLabel";
             AddressLabel.Size = new Size(52, 15);
-            AddressLabel.TabIndex = 6;
+            AddressLabel.TabIndex = 9;
             AddressLabel.Text = "Address:";
             // 
             // PhoneLabel
             // 
             PhoneLabel.AutoSize = true;
             PhoneLabel.ForeColor = Color.White;
-            PhoneLabel.Location = new Point(255, 109);
+            PhoneLabel.Location = new Point(53, 104);
             PhoneLabel.Name = "PhoneLabel";
             PhoneLabel.Size = new Size(44, 15);
-            PhoneLabel.TabIndex = 7;
+            PhoneLabel.TabIndex = 11;
             PhoneLabel.Text = "Phone:";
             // 
             // EmailLabel
@@ -124,7 +119,7 @@
             EmailLabel.Location = new Point(255, 66);
             EmailLabel.Name = "EmailLabel";
             EmailLabel.Size = new Size(39, 15);
-            EmailLabel.TabIndex = 8;
+            EmailLabel.TabIndex = 10;
             EmailLabel.Text = "Email:";
             // 
             // ClientsDataGridView
@@ -133,15 +128,16 @@
             ClientsDataGridView.Location = new Point(0, 176);
             ClientsDataGridView.Name = "ClientsDataGridView";
             ClientsDataGridView.Size = new Size(735, 302);
-            ClientsDataGridView.TabIndex = 9;
+            ClientsDataGridView.TabIndex = 6;
             ClientsDataGridView.SelectionChanged += ClientsDataGridView_SelectionChanged;
+            ClientsDataGridView.KeyDown += ClientsDataGridView_KeyDown;
             // 
             // SaveButton
             // 
             SaveButton.Location = new Point(567, 147);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(75, 23);
-            SaveButton.TabIndex = 10;
+            SaveButton.TabIndex = 4;
             SaveButton.Text = "Save";
             SaveButton.UseVisualStyleBackColor = true;
             SaveButton.Click += SaveButton_Click;
@@ -151,7 +147,7 @@
             DeleteButton.Location = new Point(648, 147);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
-            DeleteButton.TabIndex = 11;
+            DeleteButton.TabIndex = 5;
             DeleteButton.Text = "Delete";
             DeleteButton.UseVisualStyleBackColor = true;
             DeleteButton.Click += DeleteButton_Click;
@@ -161,12 +157,43 @@
             ErrorProvider.BlinkStyle = ErrorBlinkStyle.NeverBlink;
             ErrorProvider.ContainerControl = this;
             // 
+            // AddressRichTextBox
+            // 
+            AddressRichTextBox.Location = new Point(299, 101);
+            AddressRichTextBox.Name = "AddressRichTextBox";
+            AddressRichTextBox.Size = new Size(128, 61);
+            AddressRichTextBox.TabIndex = 12;
+            AddressRichTextBox.Text = "";
+            // 
+            // ExportButton
+            // 
+            ExportButton.Location = new Point(627, 21);
+            ExportButton.Name = "ExportButton";
+            ExportButton.Size = new Size(51, 25);
+            ExportButton.TabIndex = 13;
+            ExportButton.Text = "Export";
+            ExportButton.UseVisualStyleBackColor = true;
+            ExportButton.Click += ExportButton_Click;
+            // 
+            // ImportButton
+            // 
+            ImportButton.Location = new Point(680, 21);
+            ImportButton.Name = "ImportButton";
+            ImportButton.Size = new Size(51, 25);
+            ImportButton.TabIndex = 14;
+            ImportButton.Text = "Import";
+            ImportButton.UseVisualStyleBackColor = true;
+            ImportButton.Click += ImportButton_Click;
+            // 
             // ClientForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(46, 51, 73);
             ClientSize = new Size(733, 477);
+            Controls.Add(ImportButton);
+            Controls.Add(ExportButton);
+            Controls.Add(AddressRichTextBox);
             Controls.Add(DeleteButton);
             Controls.Add(SaveButton);
             Controls.Add(ClientsDataGridView);
@@ -174,7 +201,6 @@
             Controls.Add(PhoneLabel);
             Controls.Add(AddressLabel);
             Controls.Add(NameLabel);
-            Controls.Add(AddressTextBox);
             Controls.Add(EmailTextBox);
             Controls.Add(PhoneTextBox);
             Controls.Add(NameTextBox);
@@ -195,7 +221,6 @@
         private TextBox NameTextBox;
         private TextBox PhoneTextBox;
         private TextBox EmailTextBox;
-        private TextBox AddressTextBox;
         private Label NameLabel;
         private Label AddressLabel;
         private Label PhoneLabel;
@@ -204,5 +229,8 @@
         private Button SaveButton;
         private Button DeleteButton;
         private ErrorProvider ErrorProvider;
+        private RichTextBox AddressRichTextBox;
+        private Button ImportButton;
+        private Button ExportButton;
     }
 }

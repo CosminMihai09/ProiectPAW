@@ -23,17 +23,13 @@ namespace ProiectPAW
         {
             InitializeComponent();
             context = new LoanContext();
+            this.LoadClients();
         }
 
-        private void LoadClients()
+        internal void LoadClients()
         {
             var clients = context.Clients.ToList();
             ClientsDataGridView.DataSource = clients;
-        }
-
-        private void ClientForm_Load(object sender, EventArgs e)
-        {
-            LoadClients();
         }
 
         private void ClientsDataGridView_SelectionChanged(object sender, EventArgs e)
@@ -43,7 +39,7 @@ namespace ProiectPAW
                 var selectedRow = ClientsDataGridView.SelectedRows[0];
                 selectedClientId = (int)selectedRow.Cells["ClientId"].Value;
                 NameTextBox.Text = selectedRow.Cells["Name"].Value.ToString();
-                AddressTextBox.Text = selectedRow.Cells["Address"].Value.ToString();
+                AddressRichTextBox.Text = selectedRow.Cells["Address"].Value.ToString();
                 EmailTextBox.Text = selectedRow.Cells["Email"].Value.ToString();
                 PhoneTextBox.Text = selectedRow.Cells["Phone"].Value.ToString();
             }
@@ -63,9 +59,10 @@ namespace ProiectPAW
                     var client = new Client
                     {
                         Name = NameTextBox.Text,
-                        Address = AddressTextBox.Text,
+                        Address = AddressRichTextBox.Text,
                         Email = EmailTextBox.Text,
-                        Phone = PhoneTextBox.Text
+                        Phone = PhoneTextBox.Text,
+                        DateAdded = DateTime.Now
                     };
                     context.Clients.Add(client);
                 }
@@ -75,7 +72,7 @@ namespace ProiectPAW
                     if (client != null)
                     {
                         client.Name = NameTextBox.Text;
-                        client.Address = AddressTextBox.Text;
+                        client.Address = AddressRichTextBox.Text;
                         client.Email = EmailTextBox.Text;
                         client.Phone = PhoneTextBox.Text;
                         context.Entry(client).State = EntityState.Modified;
@@ -90,7 +87,7 @@ namespace ProiectPAW
         private void ClearForm()
         {
             NameTextBox.Clear();
-            AddressTextBox.Clear();
+            AddressRichTextBox.Clear();
             EmailTextBox.Clear();
             PhoneTextBox.Clear();
             selectedClientId = -1;
@@ -98,17 +95,7 @@ namespace ProiectPAW
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            if (selectedClientId != -1)
-            {
-                var client = context.Clients.Find(selectedClientId);
-                if (client != null)
-                {
-                    context.Clients.Remove(client);
-                    context.SaveChanges();
-                    LoadClients();
-                    ClearForm();
-                }
-            }
+            this.DeleteClient();
         }
 
         private void EmailTextBox_Validating(object sender, CancelEventArgs e)
@@ -125,6 +112,7 @@ namespace ProiectPAW
             ErrorProvider.SetError(EmailTextBox, "");
         }
 
+        //Data validation
         private bool IsValidEmail(string email)
         {
             try
@@ -137,12 +125,90 @@ namespace ProiectPAW
                 return false;
             }
         }
+
+        private void DeleteClient()
+        {
+            if (selectedClientId != -1)
+            {
+                var client = context.Clients.Find(selectedClientId);
+                if (client != null)
+                {
+                    var result = MessageBox.Show("Are you sure you want to delete this client?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                    if (result == DialogResult.Yes)
+                    {
+                        context.Clients.Remove(client);
+                        context.SaveChanges();
+                        LoadClients();
+                        ClearForm();
+                    }
+                }
+            }
+        }
+
+        //Alt Shortcut
+        private void ClientsDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                this.DeleteClient();
+            }
+        }
+
+        //Data Serialization as .json or .txt
+        private void ExportButton_Click(object sender, EventArgs e)
+        {
+            if (selectedClientId != -1)
+            {
+                var client = context.Clients.Find(selectedClientId);
+                if (client != null)
+                {
+                    using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                    {
+                        saveFileDialog.Filter = "JSON files (*.json)|*.json|Text files (*.txt)|*.txt";
+                        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            if (saveFileDialog.FilterIndex == 1)
+                            {
+                                SerializationHelper.SerializeClientToJson(client, saveFileDialog.FileName);
+                            }
+                            else if (saveFileDialog.FilterIndex == 2)
+                            {
+                                SerializationHelper.SerializeClientToTxt(client, saveFileDialog.FileName);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("No client selected for export.", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void ImportButton_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "JSON files (*.json)|*.json";
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    Client client = SerializationHelper.DeserializeClientFromJson(openFileDialog.FileName);
+                    if (client != null)
+                    {
+                        NameTextBox.Text = client.Name;
+                        AddressRichTextBox.Text = client.Address;
+                        EmailTextBox.Text = client.Email;
+                        PhoneTextBox.Text = client.Phone;
+                    }
+                    else
+                    {
+                        MessageBox.Show("Failed to import client data.", "Import Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
     }
 }
 
-/* Mai ai de facut validari si la celelalte campuri cum ai facut la email. Vezi daca ai cum sa
- * mai departezi putin error providerul ala de text bosuri.
- * Dupa trebuie sa faci acelasi lucru si pentru LoanForm si sa te mai uiti ce cerinte mai are si programul
- * 
- * !!! ATENTIE: Citeste despre EntityFramework ca esti o jigodie si nu stii dar ar fi trebuit sa stii pana acum.
- * Cand rulezi aplicatia se salveaza datele dar dupa se sterg. Banuiesc ca el creaza un fel de temporary DB.
+/* !!! ATENTIE: Citeste despre EntityFramework ca esti o jigodie si nu stii dar ar fi trebuit sa stii pana acum.
+ * Cand rulezi aplicatia se salveaza datele dar dupa se sterg. Banuiesc ca el creaza un fel de temporary DB. */

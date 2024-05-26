@@ -22,24 +22,34 @@ namespace ProiectPAW
         {
             InitializeComponent();
             context = new LoanContext();
+            LoadClients();
+            LoadLoans();
         }
-        private void LoadLoans()
+        internal void LoadLoans()
         {
-            var loans = context.Loans.Include(l => l.Client).ToList();
-            LoansDataGridView.DataSource = loans;
+            var loans = context.Loans
+                             .Include(l => l.Client)
+                             .ToList();
+
+            var displayLoans = loans.Select(l => new
+            {
+                l.LoanId,
+                l.Amount,
+                l.InterestRate,
+                l.DurationMonths,
+                ClientName = l.Client.Name
+            }).ToList();
+
+            LoansDataGridView.DataSource = displayLoans;
         }
 
         private void LoadClients()
         {
-            ClientComboBox.DataSource = context.Clients.ToList();
+            var clients = context.Clients.OrderBy(c => c.Name).ToList();
+            ClientComboBox.DataSource = clients;
             ClientComboBox.DisplayMember = "Name";
             ClientComboBox.ValueMember = "ClientId";
-        }
-
-        private void LoanForm_Load(object sender, EventArgs e)
-        {
-            LoadClients();
-            LoadLoans();
+            ClientComboBox.SelectedIndex = -1;
         }
 
         private void LoansDataGridView_SelectionChanged(object sender, EventArgs e)
