@@ -61,7 +61,7 @@ namespace ProiectPAW
                 AmountTextBox.Text = selectedRow.Cells["Amount"].Value.ToString();
                 InterestRateTextBox.Text = selectedRow.Cells["InterestRate"].Value.ToString();
                 DurationTextBox.Text = selectedRow.Cells["DurationMonths"].Value.ToString();
-                ClientComboBox.SelectedValue = selectedRow.Cells["ClientId"].Value;
+                ClientComboBox.Text = selectedRow.Cells["ClientName"].Value.ToString();
             }
             else
             {

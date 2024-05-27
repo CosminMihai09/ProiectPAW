@@ -28,8 +28,17 @@ namespace ProiectPAW
 
         internal void LoadClients()
         {
-            var clients = context.Clients.ToList();
-            ClientsDataGridView.DataSource = clients;
+            var clients = context.Clients.Include(c => c.Loans).ToList();
+            ClientsDataGridView.DataSource = clients.Select(c => new
+            {
+                c.ClientId,
+                c.Name,
+                c.Address,
+                c.Email,
+                c.Phone,
+                c.DateAdded,
+                LoanCount = c.Loans.Count
+            }).ToList();
         }
 
         private void ClientsDataGridView_SelectionChanged(object sender, EventArgs e)

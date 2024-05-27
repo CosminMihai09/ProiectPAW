@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,7 +15,12 @@ namespace ProiectPAW.Classes
         public string Email { get; set; }
         public string Phone { get; set; }
         public DateTime DateAdded { get; set; }
-
         public virtual ICollection<Loan> Loans { get; set; }
+
+        [NotMapped]
+        public int LoanCount
+        {
+            get { return Loans?.Count ?? 0; }
+        }
     }
 }

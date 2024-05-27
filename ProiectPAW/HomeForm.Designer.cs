@@ -28,46 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
-            label1 = new Label();
-            label2 = new Label();
+            ChartPictureBox = new PictureBox();
+            ((System.ComponentModel.ISupportInitialize)ChartPictureBox).BeginInit();
             SuspendLayout();
             // 
-            // label1
+            // ChartPictureBox
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(334, 144);
-            label1.Name = "label1";
-            label1.Size = new Size(159, 15);
-            label1.TabIndex = 0;
-            label1.Text = "Aici o sa fie un Grafic frumos";
+            ChartPictureBox.Dock = DockStyle.Fill;
+            ChartPictureBox.Location = new Point(0, 0);
+            ChartPictureBox.Name = "ChartPictureBox";
+            ChartPictureBox.Size = new Size(733, 477);
+            ChartPictureBox.TabIndex = 0;
+            ChartPictureBox.TabStop = false;
             // 
-            // label2
-            // 
-            label2.AutoSize = true;
-            label2.Location = new Point(338, 169);
-            label2.Name = "label2";
-            label2.Size = new Size(155, 15);
-            label2.TabIndex = 1;
-            label2.Text = "asa cum se cere la punctul 8";
-            // 
-            // Home
+            // HomeForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(46, 51, 73);
             ClientSize = new Size(733, 477);
-            Controls.Add(label2);
-            Controls.Add(label1);
+            Controls.Add(ChartPictureBox);
             FormBorderStyle = FormBorderStyle.None;
-            Name = "Home";
+            Name = "HomeForm";
             Text = "Home";
+            ((System.ComponentModel.ISupportInitialize)ChartPictureBox).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private Label label1;
-        private Label label2;
+        private PictureBox ChartPictureBox;
     }
 }
