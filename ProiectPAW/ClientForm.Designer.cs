@@ -124,16 +124,18 @@
             // 
             // ClientsDataGridView
             // 
+            ClientsDataGridView.BackgroundColor = Color.FromArgb(64, 64, 64);
             ClientsDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            ClientsDataGridView.Location = new Point(0, 176);
+            ClientsDataGridView.Dock = DockStyle.Bottom;
+            ClientsDataGridView.Location = new Point(0, 189);
             ClientsDataGridView.Name = "ClientsDataGridView";
-            ClientsDataGridView.Size = new Size(735, 302);
+            ClientsDataGridView.Size = new Size(765, 388);
             ClientsDataGridView.TabIndex = 6;
             ClientsDataGridView.SelectionChanged += ClientsDataGridView_SelectionChanged;
             // 
             // SaveButton
             // 
-            SaveButton.Location = new Point(567, 147);
+            SaveButton.Location = new Point(597, 139);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(75, 23);
             SaveButton.TabIndex = 4;
@@ -143,7 +145,7 @@
             // 
             // DeleteButton
             // 
-            DeleteButton.Location = new Point(648, 147);
+            DeleteButton.Location = new Point(678, 139);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
             DeleteButton.TabIndex = 5;
@@ -166,7 +168,7 @@
             // 
             // ExportButton
             // 
-            ExportButton.Location = new Point(627, 21);
+            ExportButton.Location = new Point(649, 21);
             ExportButton.Name = "ExportButton";
             ExportButton.Size = new Size(51, 25);
             ExportButton.TabIndex = 13;
@@ -176,7 +178,7 @@
             // 
             // ImportButton
             // 
-            ImportButton.Location = new Point(680, 21);
+            ImportButton.Location = new Point(702, 21);
             ImportButton.Name = "ImportButton";
             ImportButton.Size = new Size(51, 25);
             ImportButton.TabIndex = 14;
@@ -189,7 +191,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(46, 51, 73);
-            ClientSize = new Size(733, 477);
+            ClientSize = new Size(765, 577);
             Controls.Add(ImportButton);
             Controls.Add(ExportButton);
             Controls.Add(AddressRichTextBox);

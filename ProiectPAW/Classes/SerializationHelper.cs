@@ -1,17 +1,22 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json.Serialization;
+using System.IO;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace ProiectPAW.Classes
 {
     internal class SerializationHelper
     {
+        private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            ContractResolver = new CamelCasePropertyNamesContractResolver(),
+            Formatting = Formatting.Indented
+        };
+
         public static void SerializeClientToJson(Client client, string filePath)
         {
-            string json = JsonConvert.SerializeObject(client, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(client, jsonSettings);
             File.WriteAllText(filePath, json);
         }
 
@@ -30,6 +35,5 @@ namespace ProiectPAW.Classes
             sb.AppendLine($"Phone: {client.Phone}");
             File.WriteAllText(filePath, sb.ToString());
         }
-
     }
 }

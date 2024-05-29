@@ -56,16 +56,18 @@
             // 
             // LoansDataGridView
             // 
+            LoansDataGridView.BackgroundColor = Color.FromArgb(64, 64, 64);
             LoansDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            LoansDataGridView.Location = new Point(1, 175);
+            LoansDataGridView.Dock = DockStyle.Bottom;
+            LoansDataGridView.Location = new Point(0, 189);
             LoansDataGridView.Name = "LoansDataGridView";
-            LoansDataGridView.Size = new Size(731, 300);
+            LoansDataGridView.Size = new Size(765, 388);
             LoansDataGridView.TabIndex = 2;
             LoansDataGridView.SelectionChanged += LoansDataGridView_SelectionChanged;
             // 
             // DeleteButton
             // 
-            DeleteButton.Location = new Point(646, 146);
+            DeleteButton.Location = new Point(678, 106);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
             DeleteButton.TabIndex = 13;
@@ -75,7 +77,7 @@
             // 
             // SaveButton
             // 
-            SaveButton.Location = new Point(565, 146);
+            SaveButton.Location = new Point(597, 106);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(75, 23);
             SaveButton.TabIndex = 12;
@@ -157,7 +159,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(46, 51, 73);
-            ClientSize = new Size(733, 477);
+            ClientSize = new Size(765, 577);
             Controls.Add(ClientComboBox);
             Controls.Add(DurationTextBox);
             Controls.Add(DurationLabel);

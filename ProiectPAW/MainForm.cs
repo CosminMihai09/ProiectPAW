@@ -1,20 +1,20 @@
+using System;
+using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Windows.Forms;
 
 namespace ProiectPAW
 {
     public partial class MainForm : Form
     {
         [DllImport("Gdi32.dll", EntryPoint = "CreateRoundRectRgn")]
-
-        private static extern IntPtr CreateRoundRectRgn
-            (
+        private static extern IntPtr CreateRoundRectRgn(
             int nLeftRect,
             int nTopRect,
             int nRightRect,
             int nBottomRect,
             int nWidthEllipse,
-            int nHeightEllipse
-            );
+            int nHeightEllipse);
 
         private ClientForm clientForm;
         private LoanForm loanForm;
@@ -78,12 +78,22 @@ namespace ProiectPAW
 
         private void ExitButton_Leave(object sender, EventArgs e)
         {
-            this.LoansButton.BackColor = Color.FromArgb(24, 30, 54);
+            this.ExitButton.BackColor = Color.FromArgb(24, 30, 54);
         }
 
         private void ExitButton_Click(object sender, EventArgs e)
         {
             this.Close();
+        }
+
+        private void HomePictureBox_MouseEnter(object sender, EventArgs e)
+        {
+            HomePictureBox.BackColor = Color.FromArgb(46, 51, 73);
+        }
+
+        private void HomePictureBox_MouseLeave(object sender, EventArgs e)
+        {
+            HomePictureBox.BackColor = Color.FromArgb(24, 30, 54);
         }
 
         private void HomePictureBox_Click(object sender, EventArgs e)
@@ -94,6 +104,12 @@ namespace ProiectPAW
             this.FormLoaderPanel.Controls.Add(homeForm);
             homeForm.Show();
             this.NavigationPanel.Height = 0;
+
+            // Set the HomePictureBox color to indicate it is selected
+            HomePictureBox.BackColor = Color.FromArgb(46, 51, 73);
+            this.ClientsButton.BackColor = Color.FromArgb(24, 30, 54);
+            this.LoansButton.BackColor = Color.FromArgb(24, 30, 54);
+            this.ExitButton.BackColor = Color.FromArgb(24, 30, 54);
         }
     }
 }

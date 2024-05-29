@@ -133,7 +133,7 @@ namespace ProiectPAW
             notificationControl.Location = new Point(
                 this.ClientSize.Width - notificationControl.Width - 10,
                 this.ClientSize.Height - notificationControl.Height - 10);
-            notificationControl.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            notificationControl.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.Controls.Add(notificationControl);
             notificationControl.Hide(); // Hide initially
         }
@@ -141,9 +141,7 @@ namespace ProiectPAW
         private void ShowNotification(string message)
         {
             notificationControl.SetMessage(message);
-            notificationControl.Location = new Point(
-                this.ClientSize.Width - notificationControl.Width - 10,
-                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Location = new Point(-80, -30); // Ensure it's still positioned in the top left corner
             notificationControl.Show();
 
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
@@ -209,6 +207,7 @@ namespace ProiectPAW
                 MessageBox.Show("No client selected for export.", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
 
         private void ImportButton_Click(object sender, EventArgs e)
         {

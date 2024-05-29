@@ -37,7 +37,7 @@
             ChartPictureBox.Dock = DockStyle.Fill;
             ChartPictureBox.Location = new Point(0, 0);
             ChartPictureBox.Name = "ChartPictureBox";
-            ChartPictureBox.Size = new Size(733, 477);
+            ChartPictureBox.Size = new Size(765, 577);
             ChartPictureBox.TabIndex = 0;
             ChartPictureBox.TabStop = false;
             // 
@@ -46,7 +46,7 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(46, 51, 73);
-            ClientSize = new Size(733, 477);
+            ClientSize = new Size(765, 577);
             Controls.Add(ChartPictureBox);
             FormBorderStyle = FormBorderStyle.None;
             Name = "HomeForm";

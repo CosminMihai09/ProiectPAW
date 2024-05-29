@@ -39,7 +39,7 @@ namespace ProiectPAW
             ClientComboBox.DataBindings.Add("SelectedValue", viewModel, "SelectedLoan.ClientId", true, DataSourceUpdateMode.OnPropertyChanged);
         }
 
-        private void LoadLoans()
+        internal void LoadLoans()
         {
             LoansDataGridView.DataSource = viewModel.Loans;
         }
@@ -133,11 +133,9 @@ namespace ProiectPAW
         private void InitializeNotificationControl()
         {
             notificationControl = new NotificationControl();
-            notificationControl.Size = new Size(300, 100);
-            notificationControl.Location = new Point(
-                this.ClientSize.Width - notificationControl.Width - 10,
-                this.ClientSize.Height - notificationControl.Height - 10);
-            notificationControl.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            notificationControl.Size = new Size(500, 500);
+            notificationControl.Location = new Point(50, 50); // Position in the top left corner
+            notificationControl.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.Controls.Add(notificationControl);
             notificationControl.Hide(); // Hide initially
         }
@@ -145,9 +143,7 @@ namespace ProiectPAW
         private void ShowNotification(string message)
         {
             notificationControl.SetMessage(message);
-            notificationControl.Location = new Point(
-                this.ClientSize.Width - notificationControl.Width - 10,
-                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Location = new Point(-80, -30); // Ensure it's still positioned in the top left corner
             notificationControl.Show();
 
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();

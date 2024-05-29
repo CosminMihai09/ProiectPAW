@@ -28,13 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             panel1 = new Panel();
             NavigationPanel = new Panel();
             ExitButton = new Button();
             LoansButton = new Button();
             ClientsButton = new Button();
             UserPanel = new Panel();
-            UserNameLabel = new Label();
+            AppNameLabel = new Label();
             HomePictureBox = new PictureBox();
             FormLoaderPanel = new Panel();
             panel1.SuspendLayout();
@@ -117,7 +118,7 @@
             // 
             // UserPanel
             // 
-            UserPanel.Controls.Add(UserNameLabel);
+            UserPanel.Controls.Add(AppNameLabel);
             UserPanel.Controls.Add(HomePictureBox);
             UserPanel.Dock = DockStyle.Top;
             UserPanel.Location = new Point(0, 0);
@@ -125,21 +126,21 @@
             UserPanel.Size = new Size(186, 144);
             UserPanel.TabIndex = 0;
             // 
-            // UserNameLabel
+            // AppNameLabel
             // 
-            UserNameLabel.AutoSize = true;
-            UserNameLabel.BackColor = Color.FromArgb(24, 30, 54);
-            UserNameLabel.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            UserNameLabel.ForeColor = Color.FromArgb(0, 126, 249);
-            UserNameLabel.Location = new Point(49, 99);
-            UserNameLabel.Name = "UserNameLabel";
-            UserNameLabel.Size = new Size(85, 16);
-            UserNameLabel.TabIndex = 1;
-            UserNameLabel.Text = "User Name";
+            AppNameLabel.AutoSize = true;
+            AppNameLabel.BackColor = Color.FromArgb(24, 30, 54);
+            AppNameLabel.Font = new Font("Microsoft Sans Serif", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            AppNameLabel.ForeColor = Color.FromArgb(0, 126, 249);
+            AppNameLabel.Location = new Point(38, 99);
+            AppNameLabel.Name = "AppNameLabel";
+            AppNameLabel.Size = new Size(106, 16);
+            AppNameLabel.TabIndex = 1;
+            AppNameLabel.Text = "Loan Manager";
             // 
             // HomePictureBox
             // 
-            HomePictureBox.Image = Properties.Resources.Blue_Gold_Minimalist_Car_Showroom_Logo;
+            HomePictureBox.Image = (Image)resources.GetObject("HomePictureBox.Image");
             HomePictureBox.Location = new Point(60, 22);
             HomePictureBox.Name = "HomePictureBox";
             HomePictureBox.Size = new Size(63, 63);
@@ -147,6 +148,8 @@
             HomePictureBox.TabIndex = 0;
             HomePictureBox.TabStop = false;
             HomePictureBox.Click += HomePictureBox_Click;
+            HomePictureBox.MouseEnter += HomePictureBox_MouseEnter;
+            HomePictureBox.MouseLeave += HomePictureBox_MouseLeave;
             // 
             // FormLoaderPanel
             // 
@@ -165,6 +168,7 @@
             Controls.Add(FormLoaderPanel);
             Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "MainForm";
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Form1";
@@ -178,7 +182,7 @@
         #endregion
         private Panel panel1;
         private Panel UserPanel;
-        private Label UserNameLabel;
+        private Label AppNameLabel;
         private PictureBox HomePictureBox;
         private Button ClientsButton;
         private Panel NavigationPanel;

@@ -81,7 +81,7 @@ namespace ProiectPAW
                 g.DrawString("New Clients", titleFont, titleBrush, new PointF(ChartPictureBox.Width / 2 - 60, margin / 6));
 
                 // Y-Axis label (moved down slightly)
-                g.DrawString("Clients", labelFont, labelBrush, new PointF(margin / 4, margin));
+                g.DrawString("Clients", labelFont, labelBrush, new PointF(margin / 2, margin / 4));
 
                 // X-Axis label
                 g.DrawString("Date", labelFont, labelBrush, new PointF(ChartPictureBox.Width - margin, ChartPictureBox.Height - margin / 2));
