@@ -1,15 +1,15 @@
 ﻿using ProiectPAW.Classes;
 using ProiectPAW.Data;
 using System.ComponentModel;
-using System.Data.Entity;
 using System.Linq;
+using System.Data.Entity;
 
 public class ClientViewModel : INotifyPropertyChanged
 {
     private LoanContext context;
 
-    public BindingList<Client> Clients { get; set; }
-    private Client selectedClient;
+    public BindingList<Client> Clients { get; set; } = new BindingList<Client>();
+    private Client selectedClient = new Client();
     public Client SelectedClient
     {
         get => selectedClient;
@@ -30,6 +30,21 @@ public class ClientViewModel : INotifyPropertyChanged
     {
         var clients = context.Clients.Include(c => c.Loans).ToList();
         Clients = new BindingList<Client>(clients);
+
+        if (Clients.Count == 0)
+        {
+            Clients = new BindingList<Client>();
+        }
+
+        // Ensure a selected client is always available
+        if (SelectedClient == null && Clients.Count > 0)
+        {
+            SelectedClient = Clients.First();
+        }
+        else
+        {
+            SelectedClient = new Client();
+        }
     }
 
     public void AddClient(Client client)

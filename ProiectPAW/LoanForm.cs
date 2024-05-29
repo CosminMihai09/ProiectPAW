@@ -15,33 +15,61 @@ namespace ProiectPAW
 
         public LoanForm()
         {
-            InitializeComponent();
-            viewModel = new LoanViewModel();
-            BindControls();
-            InitializeNotificationControl();
+            try
+            {
+                InitializeComponent();
+                Log("Initialized components");
+
+                viewModel = new LoanViewModel();
+                Log("Initialized viewModel");
+
+                BindControls();
+                Log("Bound controls");
+
+                InitializeNotificationControl();
+                Log("Initialized notification control");
+
+                LoadLoans();
+                Log("Loaded loans");
+
+                // Add KeyDown event handler
+                LoansDataGridView.KeyDown += LoansDataGridView_KeyDown;
+            }
+            catch (Exception ex)
+            {
+                Log("Error in LoanForm constructor: " + ex.Message);
+                MessageBox.Show("Error initializing LoanForm: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void BindControls()
         {
-            // Bind DataGridView to Loans list
-            LoadLoans();
+            LoansDataGridView.DataSource = viewModel.Loans;
             LoansDataGridView.SelectionChanged += LoansDataGridView_SelectionChanged;
 
-            // Bind individual fields to SelectedLoan
             AmountTextBox.DataBindings.Add("Text", viewModel, "SelectedLoan.Amount", true, DataSourceUpdateMode.OnPropertyChanged);
             InterestRateTextBox.DataBindings.Add("Text", viewModel, "SelectedLoan.InterestRate", true, DataSourceUpdateMode.OnPropertyChanged);
             DurationTextBox.DataBindings.Add("Text", viewModel, "SelectedLoan.DurationMonths", true, DataSourceUpdateMode.OnPropertyChanged);
 
-            // Bind ComboBox to Clients list and SelectedLoan.ClientId
             ClientComboBox.DataSource = viewModel.Clients;
             ClientComboBox.DisplayMember = "Name";
             ClientComboBox.ValueMember = "ClientId";
             ClientComboBox.DataBindings.Add("SelectedValue", viewModel, "SelectedLoan.ClientId", true, DataSourceUpdateMode.OnPropertyChanged);
         }
 
-        internal void LoadLoans()
+        private void LoadLoans()
         {
-            LoansDataGridView.DataSource = viewModel.Loans;
+            try
+            {
+                viewModel.LoadLoans();
+                LoansDataGridView.DataSource = null;
+                LoansDataGridView.DataSource = viewModel.Loans;
+            }
+            catch (Exception ex)
+            {
+                Log("Error in LoadLoans: " + ex.Message);
+                MessageBox.Show("Error loading loans: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void LoansDataGridView_SelectionChanged(object sender, EventArgs e)
@@ -62,8 +90,8 @@ namespace ProiectPAW
         {
             if (e.KeyCode == Keys.Delete)
             {
-                e.Handled = true; // Prevent default delete behavior
-                DeleteSelectedLoan();
+                e.Handled = true;
+                ConfirmAndDeleteSelectedLoan();
             }
         }
 
@@ -102,48 +130,62 @@ namespace ProiectPAW
 
         private void RefreshDataGridView()
         {
+            viewModel.LoadLoans();
             LoansDataGridView.DataSource = null;
-            LoadLoans();
+            LoansDataGridView.DataSource = viewModel.Loans;
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            DeleteSelectedLoan();
+            ConfirmAndDeleteSelectedLoan();
         }
 
-        private void DeleteSelectedLoan()
+        private void ConfirmAndDeleteSelectedLoan()
         {
             if (viewModel.SelectedLoan != null && viewModel.SelectedLoan.LoanId != 0)
             {
                 var result = MessageBox.Show("Are you sure you want to delete this loan?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
                 if (result == DialogResult.Yes)
                 {
-                    var loan = new Loan
+                    try
                     {
-                        LoanId = viewModel.SelectedLoan.LoanId
-                    };
-                    viewModel.DeleteLoan(loan);
-                    ShowNotification("Loan deleted successfully!");
-                    viewModel.SelectedLoan = new LoanViewModelItem();
-                    RefreshDataGridView();
+                        var loan = viewModel.context.Loans.Find(viewModel.SelectedLoan.LoanId);
+                        if (loan != null)
+                        {
+                            viewModel.context.Loans.Remove(loan);
+                            viewModel.context.SaveChanges();
+                            ShowNotification("Loan deleted successfully!");
+                            viewModel.SelectedLoan = new LoanViewModelItem();
+                            RefreshDataGridView();
+                        }
+                        else
+                        {
+                            MessageBox.Show("Loan not found. It may have already been deleted.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error deleting loan: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
                 }
             }
         }
 
+
         private void InitializeNotificationControl()
         {
             notificationControl = new NotificationControl();
-            notificationControl.Size = new Size(500, 500);
-            notificationControl.Location = new Point(50, 50); // Position in the top left corner
+            notificationControl.Size = new Size(300, 100);
+            notificationControl.Location = new Point(10, 10); // Position in the top left corner
             notificationControl.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.Controls.Add(notificationControl);
-            notificationControl.Hide(); // Hide initially
+            notificationControl.Hide();
         }
 
         private void ShowNotification(string message)
         {
             notificationControl.SetMessage(message);
-            notificationControl.Location = new Point(-80, -30); // Ensure it's still positioned in the top left corner
+            notificationControl.Location = new Point(10, 10); // Ensure it's still positioned in the top left corner
             notificationControl.Show();
 
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
@@ -156,5 +198,12 @@ namespace ProiectPAW
             };
             timer.Start();
         }
+
+        private void Log(string message)
+        {
+            // Implement your logging logic here. For example, write to a file or console.
+            Console.WriteLine(message);
+        }
     }
+
 }

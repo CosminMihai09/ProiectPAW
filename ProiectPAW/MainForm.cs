@@ -30,8 +30,6 @@ namespace ProiectPAW
             this.FormLoaderPanel.Controls.Add(homeForm);
             homeForm.Show();
             this.NavigationPanel.Height = 0;
-            clientForm = new ClientForm();
-            loanForm = new LoanForm();
         }
 
         private void ClientsButton_Click(object sender, EventArgs e)
@@ -44,7 +42,7 @@ namespace ProiectPAW
             this.ExitButton.BackColor = Color.FromArgb(24, 30, 54);
 
             this.FormLoaderPanel.Controls.Clear();
-            ClientForm clientForm = new ClientForm() { Dock = DockStyle.Fill, TopLevel = false, TopMost = true };
+            clientForm = new ClientForm() { Dock = DockStyle.Fill, TopLevel = false, TopMost = true };
             clientForm.FormBorderStyle = FormBorderStyle.None;
             this.FormLoaderPanel.Controls.Add(clientForm);
             clientForm.Show();
@@ -60,10 +58,17 @@ namespace ProiectPAW
             this.ExitButton.BackColor = Color.FromArgb(24, 30, 54);
 
             this.FormLoaderPanel.Controls.Clear();
-            LoanForm loanForm = new LoanForm() { Dock = DockStyle.Fill, TopLevel = false, TopMost = true };
-            loanForm.FormBorderStyle = FormBorderStyle.None;
-            this.FormLoaderPanel.Controls.Add(loanForm);
-            loanForm.Show();
+            try
+            {
+                loanForm = new LoanForm() { Dock = DockStyle.Fill, TopLevel = false, TopMost = true };
+                loanForm.FormBorderStyle = FormBorderStyle.None;
+                this.FormLoaderPanel.Controls.Add(loanForm);
+                loanForm.Show();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error showing LoanForm: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void ClientsButton_Leave(object sender, EventArgs e)

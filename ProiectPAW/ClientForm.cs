@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Forms;
 using NotificationControlApp;
+using System.Data.Entity;
 
 namespace ProiectPAW
 {
@@ -19,13 +20,14 @@ namespace ProiectPAW
             viewModel = new ClientViewModel();
             BindControls();
             InitializeNotificationControl();
+            LoadClients();
             ClientsDataGridView.KeyDown += ClientsDataGridView_KeyDown; // Add KeyDown event handler
         }
 
         private void BindControls()
         {
             // Bind DataGridView to Clients list
-            LoadClients();
+            ClientsDataGridView.DataSource = viewModel.Clients;
             ClientsDataGridView.SelectionChanged += ClientsDataGridView_SelectionChanged;
 
             // Bind individual fields to SelectedClient
@@ -37,25 +39,28 @@ namespace ProiectPAW
 
         internal void LoadClients()
         {
-            var clients = viewModel.Clients.Select(c => new
+            try
             {
-                c.ClientId,
-                c.Name,
-                c.Address,
-                c.Email,
-                c.Phone,
-                c.DateAdded,
-                LoanCount = c.Loans.Count
-            }).ToList();
+                viewModel.LoadClients();
+                var clients = viewModel.Clients.Select(c => new
+                {
+                    c.ClientId,
+                    c.Name,
+                    c.Address,
+                    c.Email,
+                    c.Phone,
+                    c.DateAdded,
+                    LoanCount = c.Loans.Count
+                }).ToList();
 
-            ClientsDataGridView.DataSource = clients;
-            ClientsDataGridView.Columns["ClientId"].Visible = false; // Hide the ClientId column if needed
-            if (ClientsDataGridView.Columns.Contains("Loans"))
+                ClientsDataGridView.DataSource = clients;
+                ClientsDataGridView.Columns["ClientId"].Visible = false; // Hide the ClientId column if needed
+            }
+            catch (Exception ex)
             {
-                ClientsDataGridView.Columns["Loans"].Visible = false; // Hide the Loans column if it appears
+                MessageBox.Show("Error loading clients: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
         private void ClientsDataGridView_SelectionChanged(object sender, EventArgs e)
         {
@@ -97,6 +102,7 @@ namespace ProiectPAW
                 }
                 viewModel.LoadClients();
                 RefreshDataGridView();
+                ClearForm();
             }
         }
 
@@ -126,6 +132,14 @@ namespace ProiectPAW
             }
         }
 
+        private void ClearForm()
+        {
+            NameTextBox.Clear();
+            AddressRichTextBox.Clear();
+            EmailTextBox.Clear();
+            PhoneTextBox.Clear();
+        }
+
         private void InitializeNotificationControl()
         {
             notificationControl = new NotificationControl();
@@ -133,7 +147,7 @@ namespace ProiectPAW
             notificationControl.Location = new Point(
                 this.ClientSize.Width - notificationControl.Width - 10,
                 this.ClientSize.Height - notificationControl.Height - 10);
-            notificationControl.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            notificationControl.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             this.Controls.Add(notificationControl);
             notificationControl.Hide(); // Hide initially
         }
@@ -141,7 +155,9 @@ namespace ProiectPAW
         private void ShowNotification(string message)
         {
             notificationControl.SetMessage(message);
-            notificationControl.Location = new Point(-80, -30); // Ensure it's still positioned in the top left corner
+            notificationControl.Location = new Point(
+                this.ClientSize.Width - notificationControl.Width - 10,
+                this.ClientSize.Height - notificationControl.Height - 10);
             notificationControl.Show();
 
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
@@ -208,7 +224,6 @@ namespace ProiectPAW
             }
         }
 
-
         private void ImportButton_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
@@ -219,7 +234,38 @@ namespace ProiectPAW
                     Client client = SerializationHelper.DeserializeClientFromJson(openFileDialog.FileName);
                     if (client != null)
                     {
-                        viewModel.SelectedClient = client;
+                        // Reset Loans and LoanCount
+                        client.Loans = new List<Loan>();
+                        using (var context = new LoanContext())
+                        {
+                            context.Entry(client).State = EntityState.Detached; // Detach the entity to reset navigation properties
+
+                            // Attach the imported client to the context and mark it as modified
+                            var existingClient = context.Clients.Find(client.ClientId);
+                            if (existingClient !=
+
+     null)
+                            {
+                                context.Entry(existingClient).CurrentValues.SetValues(client);
+                            }
+                            else
+                            {
+                                context.Clients.Attach(client);
+                                context.Entry(client).State = EntityState.Added;
+                            }
+
+                            // Set the imported client as the selected client in the ViewModel
+                            viewModel.SelectedClient = client;
+
+                            // Save changes to the context
+                            context.SaveChanges();
+                        }
+
+                        ShowNotification("Client imported successfully!");
+
+                        // Refresh the DataGridView to reflect changes
+                        viewModel.LoadClients();
+                        RefreshDataGridView();
                     }
                     else
                     {
