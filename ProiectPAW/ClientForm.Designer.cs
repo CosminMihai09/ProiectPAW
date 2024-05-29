@@ -71,7 +71,7 @@
             PhoneTextBox.Location = new Point(97, 101);
             PhoneTextBox.Name = "PhoneTextBox";
             PhoneTextBox.Size = new Size(128, 23);
-            PhoneTextBox.TabIndex = 3;
+            PhoneTextBox.TabIndex = 1;
             // 
             // EmailTextBox
             // 
@@ -135,7 +135,7 @@
             // 
             // SaveButton
             // 
-            SaveButton.Location = new Point(597, 139);
+            SaveButton.Location = new Point(597, 160);
             SaveButton.Name = "SaveButton";
             SaveButton.Size = new Size(75, 23);
             SaveButton.TabIndex = 4;
@@ -145,7 +145,7 @@
             // 
             // DeleteButton
             // 
-            DeleteButton.Location = new Point(678, 139);
+            DeleteButton.Location = new Point(678, 160);
             DeleteButton.Name = "DeleteButton";
             DeleteButton.Size = new Size(75, 23);
             DeleteButton.TabIndex = 5;
@@ -162,8 +162,8 @@
             // 
             AddressRichTextBox.Location = new Point(299, 101);
             AddressRichTextBox.Name = "AddressRichTextBox";
-            AddressRichTextBox.Size = new Size(128, 61);
-            AddressRichTextBox.TabIndex = 12;
+            AddressRichTextBox.Size = new Size(128, 82);
+            AddressRichTextBox.TabIndex = 3;
             AddressRichTextBox.Text = "";
             // 
             // ExportButton
@@ -171,7 +171,7 @@
             ExportButton.Location = new Point(649, 21);
             ExportButton.Name = "ExportButton";
             ExportButton.Size = new Size(51, 25);
-            ExportButton.TabIndex = 13;
+            ExportButton.TabIndex = 6;
             ExportButton.Text = "Export";
             ExportButton.UseVisualStyleBackColor = true;
             ExportButton.Click += ExportButton_Click;
@@ -181,7 +181,7 @@
             ImportButton.Location = new Point(702, 21);
             ImportButton.Name = "ImportButton";
             ImportButton.Size = new Size(51, 25);
-            ImportButton.TabIndex = 14;
+            ImportButton.TabIndex = 7;
             ImportButton.Text = "Import";
             ImportButton.UseVisualStyleBackColor = true;
             ImportButton.Click += ImportButton_Click;

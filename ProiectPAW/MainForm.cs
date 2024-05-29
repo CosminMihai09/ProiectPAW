@@ -56,7 +56,6 @@ namespace ProiectPAW
             this.LoansButton.BackColor = Color.FromArgb(46, 51, 73);
             this.ClientsButton.BackColor = Color.FromArgb(24, 30, 54);
             this.ExitButton.BackColor = Color.FromArgb(24, 30, 54);
-
             this.FormLoaderPanel.Controls.Clear();
             try
             {
@@ -110,7 +109,6 @@ namespace ProiectPAW
             homeForm.Show();
             this.NavigationPanel.Height = 0;
 
-            // Set the HomePictureBox color to indicate it is selected
             HomePictureBox.BackColor = Color.FromArgb(46, 51, 73);
             this.ClientsButton.BackColor = Color.FromArgb(24, 30, 54);
             this.LoansButton.BackColor = Color.FromArgb(24, 30, 54);

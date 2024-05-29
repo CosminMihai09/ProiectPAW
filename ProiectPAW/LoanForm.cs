@@ -18,26 +18,11 @@ namespace ProiectPAW
             try
             {
                 InitializeComponent();
-                Log("Initialized components");
-
-                viewModel = new LoanViewModel();
-                Log("Initialized viewModel");
-
-                BindControls();
-                Log("Bound controls");
-
-                InitializeNotificationControl();
-                Log("Initialized notification control");
-
-                LoadLoans();
-                Log("Loaded loans");
-
-                // Add KeyDown event handler
+                SetTextBoxPlaceholders();
                 LoansDataGridView.KeyDown += LoansDataGridView_KeyDown;
             }
             catch (Exception ex)
             {
-                Log("Error in LoanForm constructor: " + ex.Message);
                 MessageBox.Show("Error initializing LoanForm: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -55,6 +40,23 @@ namespace ProiectPAW
             ClientComboBox.DisplayMember = "Name";
             ClientComboBox.ValueMember = "ClientId";
             ClientComboBox.DataBindings.Add("SelectedValue", viewModel, "SelectedLoan.ClientId", true, DataSourceUpdateMode.OnPropertyChanged);
+        }
+        private void SetTextBoxPlaceholders()
+        {
+            if (viewModel.SelectedLoan.Amount == 0)
+            {
+                AmountTextBox.Text = string.Empty;
+            }
+
+            if (viewModel.SelectedLoan.InterestRate == 0)
+            {
+                InterestRateTextBox.Text = string.Empty;
+            }
+
+            if (viewModel.SelectedLoan.DurationMonths == 0)
+            {
+                DurationTextBox.Text = string.Empty;
+            }
         }
 
         private void LoadLoans()
@@ -84,6 +86,8 @@ namespace ProiectPAW
             {
                 viewModel.SelectedLoan = new LoanViewModelItem();
             }
+
+            SetTextBoxPlaceholders();
         }
 
         private void LoansDataGridView_KeyDown(object sender, KeyEventArgs e)
@@ -97,35 +101,40 @@ namespace ProiectPAW
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (ValidateChildren())
+            if (this.ClientComboBox.Text != string.Empty)
             {
-                if (viewModel.SelectedLoan.LoanId == 0)
+                if (ValidateChildren())
                 {
-                    var loan = new Loan
+                    if (viewModel.SelectedLoan.LoanId == 0)
                     {
-                        Amount = viewModel.SelectedLoan.Amount,
-                        InterestRate = viewModel.SelectedLoan.InterestRate,
-                        DurationMonths = viewModel.SelectedLoan.DurationMonths,
-                        ClientId = viewModel.SelectedLoan.ClientId
-                    };
-                    viewModel.AddLoan(loan);
-                    ShowNotification("Loan added successfully!");
-                }
-                else
-                {
-                    var loan = new Loan
+                        var loan = new Loan
+                        {
+                            Amount = viewModel.SelectedLoan.Amount,
+                            InterestRate = viewModel.SelectedLoan.InterestRate,
+                            DurationMonths = viewModel.SelectedLoan.DurationMonths,
+                            ClientId = viewModel.SelectedLoan.ClientId
+                        };
+                        viewModel.AddLoan(loan);
+                        ShowNotification("Loan added successfully!");
+                    }
+                    else
                     {
-                        LoanId = viewModel.SelectedLoan.LoanId,
-                        Amount = viewModel.SelectedLoan.Amount,
-                        InterestRate = viewModel.SelectedLoan.InterestRate,
-                        DurationMonths = viewModel.SelectedLoan.DurationMonths,
-                        ClientId = viewModel.SelectedLoan.ClientId
-                    };
-                    viewModel.UpdateLoan(loan);
-                    ShowNotification("Loan updated successfully!");
+                        var loan = new Loan
+                        {
+                            LoanId = viewModel.SelectedLoan.LoanId,
+                            Amount = viewModel.SelectedLoan.Amount,
+                            InterestRate = viewModel.SelectedLoan.InterestRate,
+                            DurationMonths = viewModel.SelectedLoan.DurationMonths,
+                            ClientId = viewModel.SelectedLoan.ClientId
+                        };
+                        viewModel.UpdateLoan(loan);
+                        ShowNotification("Loan updated successfully!");
+                    }
+                    RefreshDataGridView();
                 }
-                RefreshDataGridView();
             }
+            else
+                MessageBox.Show("No client selected. Please select a client before saving.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
         }
 
         private void RefreshDataGridView()
@@ -176,7 +185,7 @@ namespace ProiectPAW
         {
             notificationControl = new NotificationControl();
             notificationControl.Size = new Size(300, 100);
-            notificationControl.Location = new Point(10, 10); // Position in the top left corner
+            notificationControl.Location = new Point(-50, -50);
             notificationControl.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.Controls.Add(notificationControl);
             notificationControl.Hide();
@@ -185,7 +194,7 @@ namespace ProiectPAW
         private void ShowNotification(string message)
         {
             notificationControl.SetMessage(message);
-            notificationControl.Location = new Point(10, 10); // Ensure it's still positioned in the top left corner
+            notificationControl.Location = new Point(-70, -30);
             notificationControl.Show();
 
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
@@ -197,12 +206,6 @@ namespace ProiectPAW
                 timer.Dispose();
             };
             timer.Start();
-        }
-
-        private void Log(string message)
-        {
-            // Implement your logging logic here. For example, write to a file or console.
-            Console.WriteLine(message);
         }
     }
 

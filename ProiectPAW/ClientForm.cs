@@ -21,16 +21,14 @@ namespace ProiectPAW
             BindControls();
             InitializeNotificationControl();
             LoadClients();
-            ClientsDataGridView.KeyDown += ClientsDataGridView_KeyDown; // Add KeyDown event handler
+            ClientsDataGridView.KeyDown += ClientsDataGridView_KeyDown;
         }
 
         private void BindControls()
         {
-            // Bind DataGridView to Clients list
             ClientsDataGridView.DataSource = viewModel.Clients;
             ClientsDataGridView.SelectionChanged += ClientsDataGridView_SelectionChanged;
 
-            // Bind individual fields to SelectedClient
             NameTextBox.DataBindings.Add("Text", viewModel, "SelectedClient.Name", true, DataSourceUpdateMode.OnPropertyChanged);
             AddressRichTextBox.DataBindings.Add("Text", viewModel, "SelectedClient.Address", true, DataSourceUpdateMode.OnPropertyChanged);
             EmailTextBox.DataBindings.Add("Text", viewModel, "SelectedClient.Email", true, DataSourceUpdateMode.OnPropertyChanged);
@@ -54,7 +52,7 @@ namespace ProiectPAW
                 }).ToList();
 
                 ClientsDataGridView.DataSource = clients;
-                ClientsDataGridView.Columns["ClientId"].Visible = false; // Hide the ClientId column if needed
+                ClientsDataGridView.Columns["ClientId"].Visible = false;
             }
             catch (Exception ex)
             {
@@ -155,9 +153,7 @@ namespace ProiectPAW
         private void ShowNotification(string message)
         {
             notificationControl.SetMessage(message);
-            notificationControl.Location = new Point(
-                this.ClientSize.Width - notificationControl.Width - 10,
-                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Location = new Point(-70, -30);
             notificationControl.Show();
 
             System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
@@ -234,7 +230,6 @@ namespace ProiectPAW
                     Client client = SerializationHelper.DeserializeClientFromJson(openFileDialog.FileName);
                     if (client != null)
                     {
-                        // Reset Loans and LoanCount
                         client.Loans = new List<Loan>();
                         using (var context = new LoanContext())
                         {
@@ -242,9 +237,7 @@ namespace ProiectPAW
 
                             // Attach the imported client to the context and mark it as modified
                             var existingClient = context.Clients.Find(client.ClientId);
-                            if (existingClient !=
-
-     null)
+                            if (existingClient != null)
                             {
                                 context.Entry(existingClient).CurrentValues.SetValues(client);
                             }
@@ -254,16 +247,13 @@ namespace ProiectPAW
                                 context.Entry(client).State = EntityState.Added;
                             }
 
-                            // Set the imported client as the selected client in the ViewModel
                             viewModel.SelectedClient = client;
 
-                            // Save changes to the context
                             context.SaveChanges();
                         }
 
                         ShowNotification("Client imported successfully!");
 
-                        // Refresh the DataGridView to reflect changes
                         viewModel.LoadClients();
                         RefreshDataGridView();
                     }

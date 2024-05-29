@@ -36,7 +36,6 @@ public class ClientViewModel : INotifyPropertyChanged
             Clients = new BindingList<Client>();
         }
 
-        // Ensure a selected client is always available
         if (SelectedClient == null && Clients.Count > 0)
         {
             SelectedClient = Clients.First();

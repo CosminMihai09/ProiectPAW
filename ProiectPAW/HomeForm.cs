@@ -69,21 +69,14 @@ namespace ProiectPAW
                 float xScale = width / (float)clientsByDate.Count;
                 float yScale = height / (float)maxCount;
 
-                // Draw axes
                 g.DrawLine(axisPen, margin, ChartPictureBox.Height - margin, ChartPictureBox.Width - margin, ChartPictureBox.Height - margin);
                 g.DrawLine(axisPen, margin, ChartPictureBox.Height - margin, margin, margin);
 
-                // Draw gridlines and labels
                 Font labelFont = new Font("Arial", 10);
                 Font titleFont = new Font("Arial", 16, FontStyle.Bold);
 
-                // Title
                 g.DrawString("New Clients", titleFont, titleBrush, new PointF(ChartPictureBox.Width / 2 - 60, margin / 6));
-
-                // Y-Axis label (moved down slightly)
                 g.DrawString("Clients", labelFont, labelBrush, new PointF(margin / 2, margin / 4));
-
-                // X-Axis label
                 g.DrawString("Date", labelFont, labelBrush, new PointF(ChartPictureBox.Width - margin, ChartPictureBox.Height - margin / 2));
 
                 for (int i = 0; i <= clientsByDate.Count; i++)
@@ -105,7 +98,6 @@ namespace ProiectPAW
                     g.DrawString(i.ToString(), labelFont, labelBrush, margin - 30, y - 10);
                 }
 
-                // Draw data points and connecting lines
                 for (int i = 0; i < clientsByDate.Count; i++)
                 {
                     float x = margin + i * xScale;
