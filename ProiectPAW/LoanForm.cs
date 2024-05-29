@@ -18,8 +18,12 @@ namespace ProiectPAW
             try
             {
                 InitializeComponent();
-                SetTextBoxPlaceholders();
+                viewModel = new LoanViewModel();
+                BindControls();
+                InitializeNotificationControl();
+                LoadLoans();
                 LoansDataGridView.KeyDown += LoansDataGridView_KeyDown;
+                SetTextBoxPlaceholders();
             }
             catch (Exception ex)
             {
@@ -41,6 +45,7 @@ namespace ProiectPAW
             ClientComboBox.ValueMember = "ClientId";
             ClientComboBox.DataBindings.Add("SelectedValue", viewModel, "SelectedLoan.ClientId", true, DataSourceUpdateMode.OnPropertyChanged);
         }
+
         private void SetTextBoxPlaceholders()
         {
             if (viewModel.SelectedLoan.Amount == 0)
@@ -69,7 +74,6 @@ namespace ProiectPAW
             }
             catch (Exception ex)
             {
-                Log("Error in LoadLoans: " + ex.Message);
                 MessageBox.Show("Error loading loans: " + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -101,7 +105,7 @@ namespace ProiectPAW
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (this.ClientComboBox.Text != string.Empty)
+            if (this.ClientComboBox.SelectedValue != null)
             {
                 if (ValidateChildren())
                 {
@@ -134,7 +138,9 @@ namespace ProiectPAW
                 }
             }
             else
+            {
                 MessageBox.Show("No client selected. Please select a client before saving.", "Validation Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void RefreshDataGridView()
@@ -180,15 +186,16 @@ namespace ProiectPAW
             }
         }
 
-
         private void InitializeNotificationControl()
         {
             notificationControl = new NotificationControl();
             notificationControl.Size = new Size(300, 100);
-            notificationControl.Location = new Point(-50, -50);
-            notificationControl.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            notificationControl.Location = new Point(
+                this.ClientSize.Width - notificationControl.Width - 10,
+                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             this.Controls.Add(notificationControl);
-            notificationControl.Hide();
+            notificationControl.Hide(); // Hide initially
         }
 
         private void ShowNotification(string message)
@@ -208,5 +215,4 @@ namespace ProiectPAW
             timer.Start();
         }
     }
-
 }
