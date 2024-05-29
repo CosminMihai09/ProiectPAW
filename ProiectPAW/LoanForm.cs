@@ -1,55 +1,47 @@
 ﻿using ProiectPAW.Classes;
 using ProiectPAW.Data;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Data.Entity;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using NotificationControlApp;
 
 namespace ProiectPAW
 {
     public partial class LoanForm : Form
     {
-        private LoanContext context;
-        private int selectedLoanId = -1;
+        private LoanViewModel viewModel;
+        private NotificationControl notificationControl;
 
         public LoanForm()
         {
             InitializeComponent();
-            context = new LoanContext();
-            LoadClients();
+            viewModel = new LoanViewModel();
+            BindControls();
+            InitializeNotificationControl();
+        }
+
+        private void BindControls()
+        {
+            // Bind DataGridView to Loans list
             LoadLoans();
-        }
-        internal void LoadLoans()
-        {
-            var loans = context.Loans
-                             .Include(l => l.Client)
-                             .ToList();
+            LoansDataGridView.SelectionChanged += LoansDataGridView_SelectionChanged;
 
-            var displayLoans = loans.Select(l => new
-            {
-                l.LoanId,
-                l.Amount,
-                l.InterestRate,
-                l.DurationMonths,
-                ClientName = l.Client.Name
-            }).ToList();
+            // Bind individual fields to SelectedLoan
+            AmountTextBox.DataBindings.Add("Text", viewModel, "SelectedLoan.Amount", true, DataSourceUpdateMode.OnPropertyChanged);
+            InterestRateTextBox.DataBindings.Add("Text", viewModel, "SelectedLoan.InterestRate", true, DataSourceUpdateMode.OnPropertyChanged);
+            DurationTextBox.DataBindings.Add("Text", viewModel, "SelectedLoan.DurationMonths", true, DataSourceUpdateMode.OnPropertyChanged);
 
-            LoansDataGridView.DataSource = displayLoans;
-        }
-
-        private void LoadClients()
-        {
-            var clients = context.Clients.OrderBy(c => c.Name).ToList();
-            ClientComboBox.DataSource = clients;
+            // Bind ComboBox to Clients list and SelectedLoan.ClientId
+            ClientComboBox.DataSource = viewModel.Clients;
             ClientComboBox.DisplayMember = "Name";
             ClientComboBox.ValueMember = "ClientId";
-            ClientComboBox.SelectedIndex = -1;
+            ClientComboBox.DataBindings.Add("SelectedValue", viewModel, "SelectedLoan.ClientId", true, DataSourceUpdateMode.OnPropertyChanged);
+        }
+
+        private void LoadLoans()
+        {
+            LoansDataGridView.DataSource = viewModel.Loans;
         }
 
         private void LoansDataGridView_SelectionChanged(object sender, EventArgs e)
@@ -57,72 +49,116 @@ namespace ProiectPAW
             if (LoansDataGridView.SelectedRows.Count > 0)
             {
                 var selectedRow = LoansDataGridView.SelectedRows[0];
-                selectedLoanId = (int)selectedRow.Cells["LoanId"].Value;
-                AmountTextBox.Text = selectedRow.Cells["Amount"].Value.ToString();
-                InterestRateTextBox.Text = selectedRow.Cells["InterestRate"].Value.ToString();
-                DurationTextBox.Text = selectedRow.Cells["DurationMonths"].Value.ToString();
-                ClientComboBox.Text = selectedRow.Cells["ClientName"].Value.ToString();
+                int loanId = (int)selectedRow.Cells["LoanId"].Value;
+                viewModel.SelectedLoan = viewModel.Loans.FirstOrDefault(l => l.LoanId == loanId);
             }
             else
             {
-                ClearForm();
-                selectedLoanId = -1;
+                viewModel.SelectedLoan = new LoanViewModelItem();
+            }
+        }
+
+        private void LoansDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                e.Handled = true; // Prevent default delete behavior
+                DeleteSelectedLoan();
             }
         }
 
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (selectedLoanId == -1) // Add new loan
+            if (ValidateChildren())
             {
-                var loan = new Loan
+                if (viewModel.SelectedLoan.LoanId == 0)
                 {
-                    Amount = decimal.Parse(AmountTextBox.Text),
-                    InterestRate = decimal.Parse(InterestRateTextBox.Text),
-                    DurationMonths = int.Parse(DurationTextBox.Text),
-                    ClientId = (int)ClientComboBox.SelectedValue
-                };
-                context.Loans.Add(loan);
-            }
-            else // Update existing loan
-            {
-                var loan = context.Loans.Find(selectedLoanId);
-                if (loan != null)
-                {
-                    loan.Amount = decimal.Parse(AmountTextBox.Text);
-                    loan.InterestRate = decimal.Parse(InterestRateTextBox.Text);
-                    loan.DurationMonths = int.Parse(DurationTextBox.Text);
-                    loan.ClientId = (int)ClientComboBox.SelectedValue;
-                    context.Entry(loan).State = EntityState.Modified;
+                    var loan = new Loan
+                    {
+                        Amount = viewModel.SelectedLoan.Amount,
+                        InterestRate = viewModel.SelectedLoan.InterestRate,
+                        DurationMonths = viewModel.SelectedLoan.DurationMonths,
+                        ClientId = viewModel.SelectedLoan.ClientId
+                    };
+                    viewModel.AddLoan(loan);
+                    ShowNotification("Loan added successfully!");
                 }
+                else
+                {
+                    var loan = new Loan
+                    {
+                        LoanId = viewModel.SelectedLoan.LoanId,
+                        Amount = viewModel.SelectedLoan.Amount,
+                        InterestRate = viewModel.SelectedLoan.InterestRate,
+                        DurationMonths = viewModel.SelectedLoan.DurationMonths,
+                        ClientId = viewModel.SelectedLoan.ClientId
+                    };
+                    viewModel.UpdateLoan(loan);
+                    ShowNotification("Loan updated successfully!");
+                }
+                RefreshDataGridView();
             }
-            context.SaveChanges();
-            LoadLoans();
-            ClearForm();
         }
 
-        private void ClearForm()
+        private void RefreshDataGridView()
         {
-            AmountTextBox.Clear();
-            InterestRateTextBox.Clear();
-            DurationTextBox.Clear();
-            DurationTextBox.Text = "";
-            ClientComboBox.SelectedIndex = -1;
-            selectedLoanId = -1;
+            LoansDataGridView.DataSource = null;
+            LoadLoans();
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            if (selectedLoanId != -1)
+            DeleteSelectedLoan();
+        }
+
+        private void DeleteSelectedLoan()
+        {
+            if (viewModel.SelectedLoan != null && viewModel.SelectedLoan.LoanId != 0)
             {
-                var loan = context.Loans.Find(selectedLoanId);
-                if (loan != null)
+                var result = MessageBox.Show("Are you sure you want to delete this loan?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
                 {
-                    context.Loans.Remove(loan);
-                    context.SaveChanges();
-                    LoadLoans();
-                    ClearForm();
+                    var loan = new Loan
+                    {
+                        LoanId = viewModel.SelectedLoan.LoanId
+                    };
+                    viewModel.DeleteLoan(loan);
+                    ShowNotification("Loan deleted successfully!");
+                    viewModel.SelectedLoan = new LoanViewModelItem();
+                    RefreshDataGridView();
                 }
             }
+        }
+
+        private void InitializeNotificationControl()
+        {
+            notificationControl = new NotificationControl();
+            notificationControl.Size = new Size(300, 100);
+            notificationControl.Location = new Point(
+                this.ClientSize.Width - notificationControl.Width - 10,
+                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            this.Controls.Add(notificationControl);
+            notificationControl.Hide(); // Hide initially
+        }
+
+        private void ShowNotification(string message)
+        {
+            notificationControl.SetMessage(message);
+            notificationControl.Location = new Point(
+                this.ClientSize.Width - notificationControl.Width - 10,
+                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Show();
+
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 5000;
+            timer.Tick += (s, e) =>
+            {
+                notificationControl.Hide();
+                timer.Stop();
+                timer.Dispose();
+            };
+            timer.Start();
         }
     }
 }

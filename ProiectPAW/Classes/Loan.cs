@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProiectPAW.Classes
 {
-    internal class Loan
+    public class Loan
     {
         public int LoanId { get; set; }
         public decimal Amount { get; set; }

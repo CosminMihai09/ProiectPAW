@@ -31,9 +31,7 @@ namespace ProiectPAW
             homeForm.Show();
             this.NavigationPanel.Height = 0;
             clientForm = new ClientForm();
-            clientForm.LoadClients();
             loanForm = new LoanForm();
-            loanForm.LoadLoans();
         }
 
         private void ClientsButton_Click(object sender, EventArgs e)

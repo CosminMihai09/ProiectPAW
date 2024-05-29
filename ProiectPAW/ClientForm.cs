@@ -1,35 +1,43 @@
 ﻿using ProiectPAW.Classes;
 using ProiectPAW.Data;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Data.Entity;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Xml.Linq;
+using NotificationControlApp;
 
 namespace ProiectPAW
 {
     public partial class ClientForm : Form
     {
-        private LoanContext context;
-        private int selectedClientId = -1;
+        private ClientViewModel viewModel;
+        private NotificationControl notificationControl;
 
         public ClientForm()
         {
             InitializeComponent();
-            context = new LoanContext();
-            this.LoadClients();
+            viewModel = new ClientViewModel();
+            BindControls();
+            InitializeNotificationControl();
+            ClientsDataGridView.KeyDown += ClientsDataGridView_KeyDown; // Add KeyDown event handler
+        }
+
+        private void BindControls()
+        {
+            // Bind DataGridView to Clients list
+            LoadClients();
+            ClientsDataGridView.SelectionChanged += ClientsDataGridView_SelectionChanged;
+
+            // Bind individual fields to SelectedClient
+            NameTextBox.DataBindings.Add("Text", viewModel, "SelectedClient.Name", true, DataSourceUpdateMode.OnPropertyChanged);
+            AddressRichTextBox.DataBindings.Add("Text", viewModel, "SelectedClient.Address", true, DataSourceUpdateMode.OnPropertyChanged);
+            EmailTextBox.DataBindings.Add("Text", viewModel, "SelectedClient.Email", true, DataSourceUpdateMode.OnPropertyChanged);
+            PhoneTextBox.DataBindings.Add("Text", viewModel, "SelectedClient.Phone", true, DataSourceUpdateMode.OnPropertyChanged);
         }
 
         internal void LoadClients()
         {
-            var clients = context.Clients.Include(c => c.Loans).ToList();
-            ClientsDataGridView.DataSource = clients.Select(c => new
+            var clients = viewModel.Clients.Select(c => new
             {
                 c.ClientId,
                 c.Name,
@@ -39,23 +47,36 @@ namespace ProiectPAW
                 c.DateAdded,
                 LoanCount = c.Loans.Count
             }).ToList();
+
+            ClientsDataGridView.DataSource = clients;
+            ClientsDataGridView.Columns["ClientId"].Visible = false; // Hide the ClientId column if needed
+            if (ClientsDataGridView.Columns.Contains("Loans"))
+            {
+                ClientsDataGridView.Columns["Loans"].Visible = false; // Hide the Loans column if it appears
+            }
         }
+
 
         private void ClientsDataGridView_SelectionChanged(object sender, EventArgs e)
         {
             if (ClientsDataGridView.SelectedRows.Count > 0)
             {
                 var selectedRow = ClientsDataGridView.SelectedRows[0];
-                selectedClientId = (int)selectedRow.Cells["ClientId"].Value;
-                NameTextBox.Text = selectedRow.Cells["Name"].Value.ToString();
-                AddressRichTextBox.Text = selectedRow.Cells["Address"].Value.ToString();
-                EmailTextBox.Text = selectedRow.Cells["Email"].Value.ToString();
-                PhoneTextBox.Text = selectedRow.Cells["Phone"].Value.ToString();
+                int clientId = (int)selectedRow.Cells["ClientId"].Value;
+                viewModel.SelectedClient = viewModel.Clients.FirstOrDefault(c => c.ClientId == clientId);
             }
             else
             {
-                ClearForm();
-                selectedClientId = -1;
+                viewModel.SelectedClient = new Client();
+            }
+        }
+
+        private void ClientsDataGridView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                e.Handled = true; // Prevent default delete behavior
+                DeleteSelectedClient();
             }
         }
 
@@ -63,48 +84,77 @@ namespace ProiectPAW
         {
             if (ValidateChildren())
             {
-                if (selectedClientId == -1)
+                if (viewModel.SelectedClient.ClientId == 0)
                 {
-                    var client = new Client
-                    {
-                        Name = NameTextBox.Text,
-                        Address = AddressRichTextBox.Text,
-                        Email = EmailTextBox.Text,
-                        Phone = PhoneTextBox.Text,
-                        DateAdded = DateTime.Now
-                    };
-                    context.Clients.Add(client);
+                    viewModel.SelectedClient.DateAdded = DateTime.Now;
+                    viewModel.AddClient(viewModel.SelectedClient);
+                    ShowNotification("Client added successfully!");
                 }
                 else
                 {
-                    var client = context.Clients.Find(selectedClientId);
-                    if (client != null)
-                    {
-                        client.Name = NameTextBox.Text;
-                        client.Address = AddressRichTextBox.Text;
-                        client.Email = EmailTextBox.Text;
-                        client.Phone = PhoneTextBox.Text;
-                        context.Entry(client).State = EntityState.Modified;
-                    }
+                    viewModel.UpdateClient(viewModel.SelectedClient);
+                    ShowNotification("Client updated successfully!");
                 }
-                context.SaveChanges();
-                LoadClients();
-                ClearForm();
+                viewModel.LoadClients();
+                RefreshDataGridView();
             }
         }
 
-        private void ClearForm()
+        private void RefreshDataGridView()
         {
-            NameTextBox.Clear();
-            AddressRichTextBox.Clear();
-            EmailTextBox.Clear();
-            PhoneTextBox.Clear();
-            selectedClientId = -1;
+            ClientsDataGridView.DataSource = null;
+            LoadClients();
         }
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
-            this.DeleteClient();
+            DeleteSelectedClient();
+        }
+
+        private void DeleteSelectedClient()
+        {
+            if (viewModel.SelectedClient != null && viewModel.SelectedClient.ClientId != 0)
+            {
+                var result = MessageBox.Show("Are you sure you want to delete this client?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    viewModel.DeleteClient(viewModel.SelectedClient);
+                    ShowNotification("Client deleted successfully!");
+                    viewModel.SelectedClient = new Client();
+                    RefreshDataGridView();
+                }
+            }
+        }
+
+        private void InitializeNotificationControl()
+        {
+            notificationControl = new NotificationControl();
+            notificationControl.Size = new Size(300, 100);
+            notificationControl.Location = new Point(
+                this.ClientSize.Width - notificationControl.Width - 10,
+                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            this.Controls.Add(notificationControl);
+            notificationControl.Hide(); // Hide initially
+        }
+
+        private void ShowNotification(string message)
+        {
+            notificationControl.SetMessage(message);
+            notificationControl.Location = new Point(
+                this.ClientSize.Width - notificationControl.Width - 10,
+                this.ClientSize.Height - notificationControl.Height - 10);
+            notificationControl.Show();
+
+            System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
+            timer.Interval = 5000;
+            timer.Tick += (s, e) =>
+            {
+                notificationControl.Hide();
+                timer.Stop();
+                timer.Dispose();
+            };
+            timer.Start();
         }
 
         private void EmailTextBox_Validating(object sender, CancelEventArgs e)
@@ -121,7 +171,6 @@ namespace ProiectPAW
             ErrorProvider.SetError(EmailTextBox, "");
         }
 
-        //Data validation
         private bool IsValidEmail(string email)
         {
             try
@@ -135,62 +184,29 @@ namespace ProiectPAW
             }
         }
 
-        private void DeleteClient()
-        {
-            if (selectedClientId != -1)
-            {
-                var client = context.Clients.Find(selectedClientId);
-                if (client != null)
-                {
-                    var result = MessageBox.Show("Are you sure you want to delete this client?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-                    if (result == DialogResult.Yes)
-                    {
-                        context.Clients.Remove(client);
-                        context.SaveChanges();
-                        LoadClients();
-                        ClearForm();
-                    }
-                }
-            }
-        }
-
-        //Alt Shortcut
-        private void ClientsDataGridView_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Delete)
-            {
-                this.DeleteClient();
-            }
-        }
-
-        //Data Serialization as .json or .txt
         private void ExportButton_Click(object sender, EventArgs e)
         {
-            if (selectedClientId != -1)
+            if (viewModel.SelectedClient != null && viewModel.SelectedClient.ClientId != 0)
             {
-                var client = context.Clients.Find(selectedClientId);
-                if (client != null)
+                using (SaveFileDialog saveFileDialog = new SaveFileDialog())
                 {
-                    using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                    saveFileDialog.Filter = "JSON files (*.json)|*.json|Text files (*.txt)|*.txt";
+                    if (saveFileDialog.ShowDialog() == DialogResult.OK)
                     {
-                        saveFileDialog.Filter = "JSON files (*.json)|*.json|Text files (*.txt)|*.txt";
-                        if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                        if (saveFileDialog.FilterIndex == 1)
                         {
-                            if (saveFileDialog.FilterIndex == 1)
-                            {
-                                SerializationHelper.SerializeClientToJson(client, saveFileDialog.FileName);
-                            }
-                            else if (saveFileDialog.FilterIndex == 2)
-                            {
-                                SerializationHelper.SerializeClientToTxt(client, saveFileDialog.FileName);
-                            }
+                            SerializationHelper.SerializeClientToJson(viewModel.SelectedClient, saveFileDialog.FileName);
+                        }
+                        else if (saveFileDialog.FilterIndex == 2)
+                        {
+                            SerializationHelper.SerializeClientToTxt(viewModel.SelectedClient, saveFileDialog.FileName);
                         }
                     }
                 }
-                else
-                {
-                    MessageBox.Show("No client selected for export.", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            }
+            else
+            {
+                MessageBox.Show("No client selected for export.", "Export Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -204,10 +220,7 @@ namespace ProiectPAW
                     Client client = SerializationHelper.DeserializeClientFromJson(openFileDialog.FileName);
                     if (client != null)
                     {
-                        NameTextBox.Text = client.Name;
-                        AddressRichTextBox.Text = client.Address;
-                        EmailTextBox.Text = client.Email;
-                        PhoneTextBox.Text = client.Phone;
+                        viewModel.SelectedClient = client;
                     }
                     else
                     {
@@ -218,6 +231,3 @@ namespace ProiectPAW
         }
     }
 }
-
-/* !!! ATENTIE: Citeste despre EntityFramework ca esti o jigodie si nu stii dar ar fi trebuit sa stii pana acum.
- * Cand rulezi aplicatia se salveaza datele dar dupa se sterg. Banuiesc ca el creaza un fel de temporary DB. */

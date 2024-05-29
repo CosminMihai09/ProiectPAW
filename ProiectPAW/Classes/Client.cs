@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ProiectPAW.Classes
 {
-    internal class Client
+    public class Client
     {
         public int ClientId { get; set; }
         public string Name { get; set; }

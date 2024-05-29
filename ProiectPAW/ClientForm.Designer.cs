@@ -130,7 +130,6 @@
             ClientsDataGridView.Size = new Size(735, 302);
             ClientsDataGridView.TabIndex = 6;
             ClientsDataGridView.SelectionChanged += ClientsDataGridView_SelectionChanged;
-            ClientsDataGridView.KeyDown += ClientsDataGridView_KeyDown;
             // 
             // SaveButton
             // 

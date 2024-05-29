@@ -55,19 +55,57 @@ namespace ProiectPAW
                 Color dataPointColor = Color.FromArgb(0, 126, 249);
                 Color connectingLineColor = Color.FromArgb(0, 126, 249);
                 Color labelColor = Color.White;
+                Color gridColor = Color.Gray;
+                Color titleColor = Color.White;
 
                 Pen axisPen = new Pen(axisColor, 2);
                 Pen connectingLinePen = new Pen(connectingLineColor, 2);
+                Pen gridPen = new Pen(gridColor, 1);
                 Brush dataPointBrush = new SolidBrush(dataPointColor);
                 Brush labelBrush = new SolidBrush(labelColor);
+                Brush titleBrush = new SolidBrush(titleColor);
 
                 int maxCount = clientsByDate.Max(d => d.Count);
                 float xScale = width / (float)clientsByDate.Count;
                 float yScale = height / (float)maxCount;
 
+                // Draw axes
                 g.DrawLine(axisPen, margin, ChartPictureBox.Height - margin, ChartPictureBox.Width - margin, ChartPictureBox.Height - margin);
                 g.DrawLine(axisPen, margin, ChartPictureBox.Height - margin, margin, margin);
 
+                // Draw gridlines and labels
+                Font labelFont = new Font("Arial", 10);
+                Font titleFont = new Font("Arial", 16, FontStyle.Bold);
+
+                // Title
+                g.DrawString("New Clients", titleFont, titleBrush, new PointF(ChartPictureBox.Width / 2 - 60, margin / 6));
+
+                // Y-Axis label (moved down slightly)
+                g.DrawString("Clients", labelFont, labelBrush, new PointF(margin / 4, margin));
+
+                // X-Axis label
+                g.DrawString("Date", labelFont, labelBrush, new PointF(ChartPictureBox.Width - margin, ChartPictureBox.Height - margin / 2));
+
+                for (int i = 0; i <= clientsByDate.Count; i++)
+                {
+                    float x = margin + i * xScale;
+                    g.DrawLine(gridPen, x, margin, x, ChartPictureBox.Height - margin);
+
+                    if (i < clientsByDate.Count)
+                    {
+                        g.DrawString(clientsByDate[i].Date.ToShortDateString(), labelFont, labelBrush, x - 20, ChartPictureBox.Height - margin + 5);
+                    }
+                }
+
+                for (int i = 0; i <= maxCount; i++)
+                {
+                    float y = ChartPictureBox.Height - margin - i * yScale;
+                    g.DrawLine(gridPen, margin, y, ChartPictureBox.Width - margin, y);
+
+                    g.DrawString(i.ToString(), labelFont, labelBrush, margin - 30, y - 10);
+                }
+
+                // Draw data points and connecting lines
                 for (int i = 0; i < clientsByDate.Count; i++)
                 {
                     float x = margin + i * xScale;
@@ -81,18 +119,7 @@ namespace ProiectPAW
                         g.DrawLine(connectingLinePen, prevX, prevY, x, y);
                     }
                 }
-
-                Font labelFont = new Font("Arial", 10);
-
-                for (int i = 0; i < clientsByDate.Count; i++)
-                {
-                    float x = margin + i * xScale;
-                    float y = ChartPictureBox.Height - margin - clientsByDate[i].Count * yScale;
-                    g.DrawString(clientsByDate[i].Date.ToShortDateString(), labelFont, labelBrush, x - 20, ChartPictureBox.Height - margin + 5);
-                    g.DrawString(clientsByDate[i].Count.ToString(), labelFont, labelBrush, margin - 30, y - 10);
-                }
             }
-
             ChartPictureBox.Image = bmp;
         }
     }
